@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header'
 import ContactList from './components/ContactList'
-import { getContacts, saveContact, udpatePhoto } from './api/ContactService';
+import { getContacts, saveContact, udpatePhoto, deleteContact } from './api/ContactService';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ContactDetail from './components/ContactDetail';
 import { toastError } from './api/ToastService';
@@ -75,6 +75,8 @@ function App() {
     }
   };
 
+
+
   const updateImage = async (formData) => {
     try {
       const { data: photoUrl } = await udpatePhoto(formData);
@@ -83,6 +85,8 @@ function App() {
       toastError(error.message);
     }
   };
+
+
 
   const toggleModal = show => show ? modalRef.current.showModal() : modalRef.current.close();
 
@@ -97,8 +101,8 @@ function App() {
         <div className='container'>
           <Routes>
             <Route path='/' element={<Navigate to={'/contacts'} />} />
-            <Route path="/contacts" element={<ContactList data={data} currentPage={currentPage} getAllContacts={getAllContacts} />} />
-            <Route path="/contacts/:id" element={<ContactDetail updateContact={updateContact} updateImage={updateImage} />} />
+            <Route path="/contacts" element={<ContactList data={data} currentPage={currentPage} getAllContacts={getAllContacts}/>} />
+            <Route path="/contacts/:id" element={<ContactDetail updateContact={updateContact} updateImage={updateImage} getAllContacts={getAllContacts} />} />
           </Routes>
         </div>
       </main>

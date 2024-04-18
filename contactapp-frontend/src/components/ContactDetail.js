@@ -1,11 +1,12 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { getContact } from '../api/ContactService';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { deleteContact, getContact } from '../api/ContactService';
 import { toastError, toastSuccess } from '../api/ToastService';
 
-const ContactDetail = ({ updateContact, updateImage }) => {
+const ContactDetail = ({ updateContact, updateImage, getAllContacts }) => {
     const inputRef = useRef();
+    const navigate = useNavigate();
     const [contact, setContact] = useState({
         id: '',
         name: '',
@@ -60,6 +61,20 @@ const ContactDetail = ({ updateContact, updateImage }) => {
         toastSuccess('Contact Updated');
     };
 
+    const removeContact = async (id) => {
+        try {
+          const { data } = await deleteContact(id);
+          console.log(data);
+          getAllContacts();
+          navigate('/contacts', { replace: true })
+          toastSuccess('Contact Deleted!');
+
+        } catch (error) {
+          console.log(error);
+          toastError(error.message);
+        }
+      }
+
     useEffect(() => {
         fetchContact(id);
     }, []);
@@ -72,7 +87,7 @@ const ContactDetail = ({ updateContact, updateImage }) => {
                     <img src={contact.photoUrl} alt={`Profile photo of ${contact.name}`} />
                     <div className='profile__metadata'>
                         <p className='profile__name'>{contact.name}</p>
-                        <p className='profile__muted'>JPG, GIF, or PNG. Max size of 10MG</p>
+                        <p className='profile__muted'>JPG, GIF, or PNG. Max size of 10MB</p>
                         <button onClick={selectImage} className='btn'><i className='bi bi-cloud-upload'></i> Change Photo</button>
                     </div>
                 </div>
@@ -108,6 +123,7 @@ const ContactDetail = ({ updateContact, updateImage }) => {
                             </div>
                             <div className="form_footer">
                                 <button type="submit" className="btn">Save</button>
+                                <button type='button' className='btn btn-danger' onClick={()=>removeContact(id)}>Delete</button>
                             </div>
                         </form>
                     </div>
